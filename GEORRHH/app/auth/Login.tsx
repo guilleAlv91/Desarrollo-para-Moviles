@@ -1,6 +1,7 @@
-import {View, Text, StyleSheet, TextInput, Pressable, TouchableOpacity} from 'react-native';
-import {colors, sizes} from "../../utils";
+import { View, Text, StyleSheet, TextInput, Pressable, TouchableOpacity } from 'react-native';
+import { colors, sizes } from "../../utils";
 import { useEffect, useState } from 'react';
+import { Entypo } from '@expo/vector-icons';
 
 export default function Login() {
 
@@ -9,20 +10,20 @@ export default function Login() {
     const [error, setError] = useState<string | undefined>(undefined)
     const [isEnabled, setIsEnabled] = useState<boolean>(true)
     const [showPass, setShowPass] = useState<boolean>(true)
-    
-    const handleLogin = ()=>{
-        if (!pass || !email){
+
+    const handleLogin = () => {
+        if (!pass || !email) {
             setError('Debe completar ambos campos')
             return;
         }
     }
 
-    useEffect(()=>{
-        setIsEnabled(email !== undefined && pass !== undefined )
-    }, [email,pass])
+    useEffect(() => {
+        setIsEnabled(email !== undefined && pass !== undefined)
+    }, [email, pass])
 
 
-    return(
+    return (
         <View style={styles.container}>
             <Text style={styles.titulo}>Bienvenido!</Text>
             <TextInput
@@ -34,60 +35,79 @@ export default function Login() {
             />
             <View style={styles.passContainer}>
                 <TextInput
-                    secureTextEntry ={showPass}
-                    style={styles.input}
+                    secureTextEntry={showPass}
+                    style={styles.inputWithIcon}
                     placeholder="contraseña"
                     value={pass}
                     onChangeText={setPass}
                 />
-                <TouchableOpacity onPress={() => setShowPass(!showPass)}>
-                    <Text>{showPass ? 'Mostrar' : 'Ocultar'}</Text>
+                <TouchableOpacity
+                    style={styles.iconWrapper}
+                    onPress={() => setShowPass(!showPass)}
+                >
+                    {showPass
+                        ? <Entypo name="eye" size={22} color="gray" />
+                        : <Entypo name="eye-with-line" size={22} color="gray" />}
                 </TouchableOpacity>
             </View>
-            
+
             {error && <Text style={styles.error}>{error}</Text>}
+
             <Pressable onPress={handleLogin} disabled={isEnabled}>
-                <Text style={isEnabled ? styles.login   : styles.loginDisabled}>Iniciar Sesión</Text>
+                <Text style={isEnabled ? styles.login : styles.loginDisabled}>Iniciar Sesión</Text>
             </Pressable>
         </View>
     )
 }
 
-const styles=StyleSheet.create({
-    container:{
-        flex:1, 
-        alignItems:'center', 
-        justifyContent:'center',
-        backgroundColor: colors.backgroundColor
-
-    },
-    titulo:{
-        fontSize:sizes.titulo,
-        fontWeight:'bold',
-        color:'black'
-    },
-    passContainer:{
-        flexDirection: 'row',
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
         alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.backgroundColor
     },
-    input:{
+    titulo: {
+        fontSize: sizes.titulo,
+        fontWeight: 'bold',
+        color: 'black'
+    },
+    input: {
         height: 50,
         marginTop: 16,
         borderBottomWidth: 1,
-        minWidth: 300
+        minWidth: 300,
+        paddingHorizontal: 8
     },
-    login:{
+    passContainer: {
+        position: 'relative',
+        width: 300,
+        marginTop: 16,
+    },
+    inputWithIcon: {
+        height: 50,
+        borderBottomWidth: 1,
+        paddingHorizontal: 8,
+        paddingRight: 36,
+    },
+    iconWrapper: {
+        position: 'absolute',
+        right: 8,
+        top: '50%',
+        transform: [{ translateY: -11 }],
+    },
+    login: {
         marginTop: 16,
         fontSize: 18,
         color: colors.buttonColor
     },
-    loginDisabled:{
+    loginDisabled: {
         marginTop: 16,
         fontSize: 18,
         color: "gray"
     },
-    error:{
-        color:'red',
-        fontSize:10
+    error: {
+        color: 'red',
+        fontSize: 10
     }
 })
