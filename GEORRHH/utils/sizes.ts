@@ -1,3 +1,4 @@
 export const sizes = {
-    titulo: 20
+    header: 25,
+    titulo: 20,
 }

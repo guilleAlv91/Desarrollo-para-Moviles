@@ -1,31 +1,34 @@
-import { View, Text, StyleSheet, TextInput, Pressable, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, TouchableOpacity, Image } from 'react-native';
 import { colors, sizes } from "../../utils";
 import { useEffect, useState } from 'react';
 import { Entypo } from '@expo/vector-icons';
-
+import { GradientButton } from '../../components/GradientButton';
 export default function Login() {
-
-    const [email, setEmail] = useState<string>('')
-    const [pass, setPass] = useState<string>('')
-    const [error, setError] = useState<string | undefined>(undefined)
-    const [isEnabled, setIsEnabled] = useState<boolean>(false)
-    const [showPass, setShowPass] = useState<boolean>(true)
+    const [email, setEmail] = useState<string>('');
+    const [pass, setPass] = useState<string>('');
+    const [error, setError] = useState<string | undefined>(undefined);
+    const [isEnabled, setIsEnabled] = useState<boolean>(false);
+    const [showPass, setShowPass] = useState<boolean>(true);
 
     const handleLogin = () => {
         if (!pass || !email) {
-            setError('Debe completar ambos campos')
+            setError('Debe completar ambos campos');
             return;
         }
-    }
+        console.log('Iniciando sesión...');
+    };
 
     useEffect(() => {
-        setIsEnabled(email !== '' && pass !== '')
-    }, [email, pass])
-
+        setIsEnabled(email !== '' && pass !== '');
+    }, [email, pass]);
 
     return (
         <View style={styles.container}>
-            <Text style={styles.titulo}>Bienvenido!</Text>
+            <Image
+                source={require("../../assets/icons/logo.png")}
+                style={styles.logo}
+                resizeMode="contain"
+            />
             <TextInput
                 keyboardType={'email-address'}
                 style={styles.input}
@@ -55,35 +58,41 @@ export default function Login() {
 
             {error && <Text style={styles.error}>{error}</Text>}
 
-            <Pressable onPress={handleLogin} disabled={!isEnabled}>
-                <Text style={isEnabled ? styles.login : styles.loginDisabled}>Iniciar Sesión</Text>
-            </Pressable>
+            <GradientButton
+                title="Iniciar Sesión"
+                onPress={handleLogin}
+                isEnabled={isEnabled}
+            />
+
+            <TouchableOpacity onPress={() => console.log('Ir a registro')}>
+                <Text style={styles.registerLink}>¿No tenés cuenta? Registrate</Text>
+            </TouchableOpacity>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: colors.backgroundColor
     },
-    titulo: {
-        fontSize: sizes.titulo,
-        fontWeight: 'bold',
-        color: 'black'
+    logo: {
+        width: 250,
+        marginTop: 100,
     },
     input: {
         height: 50,
         marginTop: 16,
         borderBottomWidth: 1,
-        minWidth: 300,
-        paddingHorizontal: 8
+        minWidth: 280,
+        paddingHorizontal: 8,
+        fontSize: 16,
+        textAlignVertical: 'bottom',
     },
     passContainer: {
         position: 'relative',
-        width: 300,
+        width: 280,
         marginTop: 16,
     },
     inputWithIcon: {
@@ -91,6 +100,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         paddingHorizontal: 8,
         paddingRight: 36,
+        fontSize: 16,
+        textAlignVertical: 'bottom',
     },
     iconWrapper: {
         position: 'absolute',
@@ -98,18 +109,14 @@ const styles = StyleSheet.create({
         top: '50%',
         transform: [{ translateY: -11 }],
     },
-    login: {
-        marginTop: 16,
-        fontSize: 18,
-        color: colors.buttonColor
-    },
-    loginDisabled: {
-        marginTop: 16,
-        fontSize: 18,
-        color: "gray"
-    },
     error: {
         color: 'red',
         fontSize: 10
+    },
+    registerLink: {
+        marginTop: 20,
+        color: colors.buttonColor,
+        textDecorationLine: 'underline',
+        fontSize: 14,
     }
-})
+});
