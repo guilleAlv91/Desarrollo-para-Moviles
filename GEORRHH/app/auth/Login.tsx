@@ -5,10 +5,10 @@ import { Entypo } from '@expo/vector-icons';
 
 export default function Login() {
 
-    const [email, setEmail] = useState<string | undefined>(undefined)
-    const [pass, setPass] = useState<string | undefined>(undefined)
+    const [email, setEmail] = useState<string>('')
+    const [pass, setPass] = useState<string>('')
     const [error, setError] = useState<string | undefined>(undefined)
-    const [isEnabled, setIsEnabled] = useState<boolean>(true)
+    const [isEnabled, setIsEnabled] = useState<boolean>(false)
     const [showPass, setShowPass] = useState<boolean>(true)
 
     const handleLogin = () => {
@@ -19,7 +19,7 @@ export default function Login() {
     }
 
     useEffect(() => {
-        setIsEnabled(email !== undefined && pass !== undefined)
+        setIsEnabled(email !== '' && pass !== '')
     }, [email, pass])
 
 
@@ -41,19 +41,21 @@ export default function Login() {
                     value={pass}
                     onChangeText={setPass}
                 />
-                <TouchableOpacity
-                    style={styles.iconWrapper}
-                    onPress={() => setShowPass(!showPass)}
-                >
-                    {showPass
-                        ? <Entypo name="eye" size={22} color="gray" />
-                        : <Entypo name="eye-with-line" size={22} color="gray" />}
-                </TouchableOpacity>
+                {pass?.length > 0 && (
+                    <TouchableOpacity
+                        style={styles.iconWrapper}
+                        onPress={() => setShowPass(!showPass)}
+                    >
+                        {showPass
+                            ? <Entypo name="eye" size={22} color="gray" />
+                            : <Entypo name="eye-with-line" size={22} color="gray" />}
+                    </TouchableOpacity>
+                )}
             </View>
 
             {error && <Text style={styles.error}>{error}</Text>}
 
-            <Pressable onPress={handleLogin} disabled={isEnabled}>
+            <Pressable onPress={handleLogin} disabled={!isEnabled}>
                 <Text style={isEnabled ? styles.login : styles.loginDisabled}>Iniciar Sesión</Text>
             </Pressable>
         </View>

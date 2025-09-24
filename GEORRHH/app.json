@@ -1,29 +1,52 @@
 {
   "expo": {
-    "name": "GEORRHH",
-    "slug": "GEORRHH",
+    "name": "Laburo",
+    "slug": "Laburo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": {
+        "dark": "./assets/icons/ios-dark.png",
+        "light": "./assets/icons/ios-light.png"
+      },
+      "bundleIdentifier": "com.abrilbasteiro.Laburo",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.abrilbasteiro.Laburo"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": "./assets/icons/splash-icon-light.png",
+          "resizeMode": "contain",
+          "imageWidth": 200,
+          "dark": {
+            "image": "./assets/icons/splash-icon-dark.png",
+            "backgroundColor": "#000000"
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "5a5ac3ca-5f41-4e31-b0aa-90b22b59ec49"
+      }
     }
   }
 }
