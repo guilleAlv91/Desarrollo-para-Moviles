@@ -1,18 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import Login from './app/auth/Login';
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import Inicio from './app/home/Inicio';
+
+
 
 export default function App() {
   return (
-    <Login/>
+    <View style={{ flex: 1 }}>
+      <Inicio />
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
