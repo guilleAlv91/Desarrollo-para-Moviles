@@ -3,7 +3,8 @@ import { colors, sizes } from "../../utils";
 import { useEffect, useState } from 'react';
 import { Entypo } from '@expo/vector-icons';
 import { GradientButton } from '../../components/GradientButton';
-export default function Login() {
+
+export default function Login({ navigation }: any) {
     const [email, setEmail] = useState<string>('');
     const [pass, setPass] = useState<string>('');
     const [error, setError] = useState<string | undefined>(undefined);
@@ -15,7 +16,11 @@ export default function Login() {
             setError('Debe completar ambos campos');
             return;
         }
-        console.log('Iniciando sesión...');
+        console.log('Iniciando sesión...', email, pass);
+    };
+
+    const handleRegisterLink = () => {
+        navigation.navigate('register');
     };
 
     useEffect(() => {
@@ -64,7 +69,7 @@ export default function Login() {
                 isEnabled={isEnabled}
             />
 
-            <TouchableOpacity onPress={() => console.log('Ir a registro')}>
+            <TouchableOpacity onPress={handleRegisterLink}>
                 <Text style={styles.registerLink}>¿No tenés cuenta? Registrate</Text>
             </TouchableOpacity>
         </View>
@@ -85,6 +90,7 @@ const styles = StyleSheet.create({
         height: 50,
         marginTop: 16,
         borderBottomWidth: 1,
+        borderColor: 'gray',
         minWidth: 280,
         paddingHorizontal: 8,
         fontSize: 16,
@@ -98,6 +104,7 @@ const styles = StyleSheet.create({
     inputWithIcon: {
         height: 50,
         borderBottomWidth: 1,
+        borderColor: 'gray',
         paddingHorizontal: 8,
         paddingRight: 36,
         fontSize: 16,
