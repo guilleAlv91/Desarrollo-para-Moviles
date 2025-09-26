@@ -5,13 +5,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from './app/auth/Login';
 import Register from './app/auth/Register';
 import Inicio from './app/home/Inicio';
-import Perfil from './app/home/Perfil';
+import Perfil from './app/perfil/Perfil';
 
 const Stack = createStackNavigator()
 export default function App() {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="login">
+            <Stack.Navigator initialRouteName="perfil">
                 <Stack.Screen name="login" component={Login} options={{ headerShown: false }} />
                 <Stack.Screen name="register" component={Register} options={{ headerShown: false }} />
                 <Stack.Screen name="home" component={Inicio} options={{ headerShown: false }} />
