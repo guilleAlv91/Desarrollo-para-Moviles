@@ -2,7 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export default function Inicio() {
+export default function Inicio({ navigation }: any) {
+
+    const handlePerfil = () => {
+        navigation.navigate('perfil');
+    };
+
   return (
     <View style={styles.container}>
         <View style={styles.header}>
@@ -22,7 +27,7 @@ export default function Inicio() {
             </TouchableOpacity>
 
 
-            <TouchableOpacity style={styles.card}>
+            <TouchableOpacity style={styles.card} onPress={handlePerfil}>
                 <MaterialCommunityIcons name="account-circle" size={30} color="black" />
                 <Text style={styles.label}>Perfil</Text>
             </TouchableOpacity>
