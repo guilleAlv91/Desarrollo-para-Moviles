@@ -16,7 +16,7 @@ export default function Login({ navigation }: any) {
             setError('Debe completar ambos campos');
             return;
         }
-        console.log('Iniciando sesión...', email, pass);
+        navigation.navigate('home');
     };
 
     const handleRegisterLink = () => {

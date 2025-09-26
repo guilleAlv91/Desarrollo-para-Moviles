@@ -22,6 +22,7 @@ export default function Register({ navigation }: any) {
         onSubmit: values => {
             console.log('Registrando con los valores:', values);
             Alert.alert('¡Ya creaste tu usuario!', 'Ahora podes iniciar sesión.');
+            navigation.navigate('login');
         },
     });
 
