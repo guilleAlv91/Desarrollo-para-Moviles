@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { colors, sizes } from '../../utils';
-import { GradientButton } from '../../components/GradientButton';
+import { colors, sizes } from '../../../utils';
+import { GradientButton } from '../../../components/GradientButton';
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required('El nombre es obligatorio'),
@@ -33,6 +33,11 @@ export default function Register({ navigation }: any) {
     };
     return (
         <View style={styles.container}>
+            <Image
+                source={require("../../../assets/icons/logo.png")}
+                style={styles.logo}
+                resizeMode="contain"
+            />
             <Text style={styles.title}>Crea tu cuenta</Text>
 
             <TextInput
@@ -87,9 +92,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
         padding: 20,
         backgroundColor: colors.backgroundColor,
+    },
+    logo: {
+        width: 250,
+        marginTop: 100,
     },
     title: {
         fontSize: sizes.titulo,

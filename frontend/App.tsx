@@ -1,23 +1,25 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import Login from './app/auth/Login';
-import Register from './app/auth/Register';
-import Inicio from './app/home/Inicio';
-import Perfil from './app/perfil/Perfil';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Root from './app/root';
+import AuthProvider from './shared/context/AuthContext/auth-provider';
+// import * as SplashScreen from 'expo-splash-screen'
 
-const Stack = createStackNavigator()
+// SplashScreen.preventAutoHideAsync()
+// SplashScreen.setOptions({
+//     duration: 1000,
+//     fade: true,
+// })
 export default function App() {
     return (
-        <NavigationContainer>
-            <Stack.Navigator initialRouteName="perfil">
-                <Stack.Screen name="login" component={Login} options={{ headerShown: false }} />
-                <Stack.Screen name="register" component={Register} options={{ headerShown: false }} />
-                <Stack.Screen name="home" component={Inicio} options={{ headerShown: false }} />
-                <Stack.Screen name="perfil" component={Perfil} options={{ headerShown: false }} />
-            </Stack.Navigator>
-        </NavigationContainer>
+        <SafeAreaProvider>
+            <NavigationContainer>
+                <AuthProvider>
+                    <Root />
+                </AuthProvider>
+            </NavigationContainer>
+        </SafeAreaProvider>
     );
 }
 
