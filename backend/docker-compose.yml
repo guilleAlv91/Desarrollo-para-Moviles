@@ -2,13 +2,11 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:8.0 # Versión estable
+    image: mysql:8.0
     container_name: mysql_empleados
     restart: always
     environment:
-      # Contraseña maestra obligatoria (la puse igual para no confundir)
       MYSQL_ROOT_PASSWORD: admin
-      # Configuración solicitada
       MYSQL_DATABASE: empleados_db
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
