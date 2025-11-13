@@ -1,0 +1,753 @@
+{
+	"info": {
+		"_postman_id": "87e17439-5fbe-4999-b6b5-b701cb165111",
+		"name": "Laburo",
+		"description": "API Gestión de Empleados (NestJS)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44333944"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "[Admin] Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"access_token\", jsonData.access_token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@dominio.com\",\n    \"password\": \"AdminPassword123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/auth/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Empleado] Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"access_token\", jsonData.access_token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"empleado1@dominio.com\",\n    \"password\": \"EmpleadoPass123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/auth/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test.user@dominio.com\",\n    \"password\": \"Password123!\",\n    \"nombre\": \"Test\",\n    \"apellido\": \"User\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/auth/register",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Empleado",
+			"item": [
+				{
+					"name": "getUserByToken",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/empleados/me",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"empleados",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUserByToken",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"telefono\": \"555-9876\",\n    \"direccion\": \"Calle Falsa 123, Depto 2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/empleados/me",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"empleados",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getLicencias",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/licencias/mis-licencias",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"licencias",
+								"mis-licencias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createLicencias",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Captura el ID de la licencia creada para usarla en la prueba de admin",
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"licencia_id_nueva\", jsonData.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tipo\": \"vacaciones\",\n    \"fechaInicio\": \"2025-12-20\",\n    \"fechaFin\": \"2025-12-28\",\n    \"motivo\": \"Viaje de fin de año\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/licencias",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"licencias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteLicencia",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Captura el ID de la licencia creada para usarla en la prueba de admin",
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"licencia_id_nueva\", jsonData.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tipo\": \"vacaciones\",\n    \"fechaInicio\": \"2025-12-20\",\n    \"fechaFin\": \"2025-12-28\",\n    \"motivo\": \"Viaje de fin de año\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/licencias/id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"licencias",
+								"id"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getRecibos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/recibos/mis-recibos",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"recibos",
+								"mis-recibos"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{empleado_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Administrador",
+			"item": [
+				{
+					"name": "getEmpleados",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/empleados",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"empleados"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getEmpleadoByID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/empleados/5261d09a-843c-4b0b-9691-c6b895ca8c56",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"empleados",
+								"5261d09a-843c-4b0b-9691-c6b895ca8c56"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createEmpleado",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Captura el ID del empleado creado para usarlo en la prueba de recibos",
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"empleado_id_nuevo\", jsonData.id);",
+									"console.log(\"ID de nuevo empleado guardado.\")"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"empleado.nuevo@dominio.com\",\n    \"password\": \"NuevoPass123!\",\n    \"nombre\": \"Empleado\",\n    \"apellido\": \"DePruebaAdmin\",\n    \"role\": \"empleado\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/empleados",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"empleados"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUserById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"telefono\": \"1234-4567\",\n    \"direccion\": \"Calle nueva 456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/empleados/5261d09a-843c-4b0b-9691-c6b895ca8c56",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"empleados",
+								"5261d09a-843c-4b0b-9691-c6b895ca8c56"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteEmpleadoById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"telefono\": \"1234-4567\",\n    \"direccion\": \"Calle nueva 456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/empleados/5261d09a-843c-4b0b-9691-c6b895ca8c56",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"empleados",
+								"5261d09a-843c-4b0b-9691-c6b895ca8c56"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getLicencias",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/licencias/admin/todas",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"licencias",
+								"admin",
+								"todas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "gestionarLicencia (aprobar)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"estado\": \"aprobada\",\n    \"comentarioAdmin\": \"Disfruta tus vacaciones. Aprobado por RRHH.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/licencias/admin/actualizar-estado/{{licencia_id_nueva}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"licencias",
+								"admin",
+								"actualizar-estado",
+								"{{licencia_id_nueva}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cargarRecibo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mes\": 11,\n    \"anio\": 2025,\n    \"urlArchivo\": \"https://mi-storage.com/recibo-nov-2025.pdf\",\n    \"empleadoId\": \"{{empleado_id_nuevo}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/recibos",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"recibos"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{admin_token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "http://localhost:3000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "empleado_token",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "empleado_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "licencia_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
