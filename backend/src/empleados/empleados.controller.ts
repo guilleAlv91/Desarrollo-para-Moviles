@@ -58,7 +58,7 @@ export class EmpleadosController {
         @User() user: Empleado,
         @Body() updateEmpleadoDto: UpdateEmpleadoDto,
     ) {
-        // Un empleado no puede cambiar su propio rol o email (o contraseña por esta ruta)
+        // Un empleado no puede cambiar su propio rol. Email y contraseña cambian por otra ruta)
         delete updateEmpleadoDto.role;
         delete updateEmpleadoDto.email;
         delete updateEmpleadoDto.password;

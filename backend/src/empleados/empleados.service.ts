@@ -32,8 +32,20 @@ export class EmpleadosService {
         return this.empleadoRepository.find();
     }
 
-    async findById(id: string): Promise<Empleado> {
-        const empleado = await this.empleadoRepository.findOneBy({ id });
+    async findById(
+        id: string,
+        selectPassword = false,
+    ): Promise<Empleado | null> {
+        const query = this.empleadoRepository.createQueryBuilder('empleado');
+
+        if (selectPassword) {
+            query.addSelect('empleado.password');
+        }
+
+        query.where('empleado.id = :id', { id });
+
+        const empleado = await query.getOne();
+
         if (!empleado) {
             throw new NotFoundException(`Empleado con ID ${id} no encontrado`);
         }
