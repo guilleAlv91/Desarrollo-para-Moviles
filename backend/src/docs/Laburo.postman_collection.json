@@ -11,6 +11,43 @@
 			"name": "Auth",
 			"item": [
 				{
+					"name": "[Empleado] Cambiar Contraseña",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"currentPassword\": \"EmpleadoPass123!\",\n    \"newPassword\": \"NuevaPass123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/auth/change-password",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"auth",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "[Admin] Login",
 					"event": [
 						{
@@ -45,6 +82,64 @@
 							"path": [
 								"auth",
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Empleado] Cambiar Email (Devuelve nuevo token)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// IMPORTANTE: El email ha cambiado, así que el token anterior ya no es válido",
+									"// para futuras peticiones. Capturamos el nuevo token.",
+									"var jsonData = pm.response.json();",
+									"if (jsonData.access_token) {",
+									"    pm.environment.set(\"access_token\", jsonData.access_token);",
+									"    console.log(\"¡Token de Empleado actualizado por cambio de email!\");",
+									"}",
+									"",
+									"// Actualizamos el email del seed para la próxima prueba de login",
+									"// pm.environment.set(\"seed_email\", \"nuevo.email@dominio.com\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"newEmail\": \"empleado1.nuevo@dominio.com\",\n    \"password\": \"EmpleadoPass123!\"\n}\n// NOTA: Usar la 'currentPassword' o 'newPassword' dependiendo de cuándo ejecutes esto",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/auth/change-email",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"auth",
+								"change-email"
 							]
 						}
 					},
