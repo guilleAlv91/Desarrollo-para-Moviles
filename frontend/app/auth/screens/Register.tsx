@@ -105,53 +105,58 @@ export default function Register({ navigation }: any) {
                 {formik.touched.email && formik.errors.email && (
                     <Text style={styles.errorText}>{formik.errors.email}</Text>
                 )}
+                <View style={styles.inputContainer}>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Contraseña"
-                    secureTextEntry={showPass}
-                    onChangeText={formik.handleChange('password')}
-                    onBlur={formik.handleBlur('password')}
-                    value={formik.values.password}
-                    editable={!isLoading}
-                />
-                {formik.touched.password && formik.errors.password && (
-                    <Text style={styles.errorText}>{formik.errors.password}</Text>
-                )}
-                {formik.values.password?.length > 0 && (
-                    <TouchableOpacity
-                        style={styles.iconWrapper}
-                        onPress={() => setShowPass(!showPass)}
+                    <TextInput
+                        style={styles.inputWithIcon}
+                        placeholder="Contraseña"
+                        secureTextEntry={showPass}
+                        onChangeText={formik.handleChange('password')}
+                        onBlur={formik.handleBlur('password')}
+                        value={formik.values.password}
+                        editable={!isLoading}
+                    />
+                    {formik.touched.password && formik.errors.password && (
+                        <Text style={styles.errorText}>{formik.errors.password}</Text>
+                    )}
+                    {formik.values.password?.length > 0 && (
+                        <TouchableOpacity
+                            style={styles.iconWrapper}
+                            onPress={() => setShowPass(!showPass)}
 
-                    >
-                        {showPass
-                            ? <Entypo name="eye" size={22} color="gray" />
-                            : <Entypo name="eye-with-line" size={22} color="gray" />}
-                    </TouchableOpacity>
-                )}
-                <TextInput
-                    style={styles.input}
-                    placeholder="Confirmar contraseña"
-                    secureTextEntry={showConfirmPass}
-                    onChangeText={formik.handleChange('confirmPassword')}
-                    onBlur={formik.handleBlur('confirmPassword')}
-                    value={formik.values.confirmPassword}
-                    editable={!isLoading}
-                />
-                {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-                    <Text style={styles.errorText}>{formik.errors.confirmPassword}</Text>
-                )}
-                {formik.values.confirmPassword?.length > 0 && (
-                    <TouchableOpacity
-                        style={styles.iconWrapper}
-                        onPress={() => setShowConfirmPass(!showConfirmPass)}
+                        >
+                            {showPass
+                                ? <Entypo name="eye" size={22} color="gray" />
+                                : <Entypo name="eye-with-line" size={22} color="gray" />}
+                        </TouchableOpacity>
+                    )}
+                </View>
+                <View style={styles.inputContainer}>
 
-                    >
-                        {showConfirmPass
-                            ? <Entypo name="eye" size={22} color="gray" />
-                            : <Entypo name="eye-with-line" size={22} color="gray" />}
-                    </TouchableOpacity>
-                )}
+                    <TextInput
+                        style={styles.inputWithIcon}
+                        placeholder="Confirmar contraseña"
+                        secureTextEntry={showConfirmPass}
+                        onChangeText={formik.handleChange('confirmPassword')}
+                        onBlur={formik.handleBlur('confirmPassword')}
+                        value={formik.values.confirmPassword}
+                        editable={!isLoading}
+                    />
+                    {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                        <Text style={styles.errorText}>{formik.errors.confirmPassword}</Text>
+                    )}
+                    {formik.values.confirmPassword?.length > 0 && (
+                        <TouchableOpacity
+                            style={styles.iconWrapper}
+                            onPress={() => setShowConfirmPass(!showConfirmPass)}
+
+                        >
+                            {showConfirmPass
+                                ? <Entypo name="eye" size={22} color="gray" />
+                                : <Entypo name="eye-with-line" size={22} color="gray" />}
+                        </TouchableOpacity>
+                    )}
+                </View>
                 <GradientButton
                     title="Registrarse"
                     onPress={formik.handleSubmit}
@@ -197,6 +202,21 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         fontSize: 16,
         marginBottom: 5,
+    },
+    inputContainer: {
+        position: 'relative',
+        // width: 280,
+        // marginTop: 16,
+        width: '80%'
+    },
+    inputWithIcon: {
+        height: 50,
+        borderBottomWidth: 1,
+        borderColor: 'gray',
+        paddingHorizontal: 8,
+        paddingRight: 36,
+        fontSize: 16,
+        // textAlignVertical: 'bottom',
     },
     iconWrapper: {
         position: 'absolute',
