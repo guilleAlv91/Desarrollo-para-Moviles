@@ -3,7 +3,7 @@ export interface IUser {
     nombre: string;
     apellido: string;
     email: string;
-    // rol: string
+    role: string
 }
 
 export class User implements IUser {
@@ -11,11 +11,13 @@ export class User implements IUser {
     nombre: string;
     apellido: string;
     email: string;
+    role: string;
 
-    constructor(_id: string, nombre: string, apellido: string, email: string) {
+    constructor(_id: string, nombre: string, apellido: string, email: string, role: string) {
         this._id = _id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
+        this.role = role;
     }
 }

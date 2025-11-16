@@ -1,17 +1,28 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { AuthContext } from '../../../../shared/context/AuthContext';
 
 export default function Inicio({ navigation }: any) {
+    const { state } = useContext(AuthContext);
+    const { user, isLoading } = state;
 
     const handlePerfil = () => {
         navigation.navigate('perfil');
     };
 
+    if (isLoading) {
+        return (
+            <View style={styles.container}>
+                <Text>Cargando...</Text>
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.empresa}>Empresa S.A.</Text>
+                <Text>Hola, {user ? user.nombre : '!'}</Text>
             </View>
 
             <View style={styles.sections}>
