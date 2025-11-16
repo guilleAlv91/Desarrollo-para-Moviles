@@ -132,7 +132,6 @@ export default function Register({ navigation }: any) {
                     )}
                 </View>
                 <View style={styles.inputContainer}>
-
                     <TextInput
                         style={styles.inputWithIcon}
                         placeholder="Confirmar contraseña"
@@ -205,8 +204,6 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         position: 'relative',
-        // width: 280,
-        // marginTop: 16,
         width: '80%'
     },
     inputWithIcon: {
@@ -216,7 +213,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         paddingRight: 36,
         fontSize: 16,
-        // textAlignVertical: 'bottom',
     },
     iconWrapper: {
         position: 'absolute',
