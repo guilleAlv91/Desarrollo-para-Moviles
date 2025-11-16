@@ -10,6 +10,7 @@ export default function AuthStackScreen() {
 
 
     return (
+        // TODO Evaluar sacar SafeAreaView
         <SafeAreaView style={{ flex: 1 }}>
             <Stack.Navigator initialRouteName={AUTH_ROUTES.LOGIN} screenOptions={{ headerShown: false }}>
                 <Stack.Screen name={AUTH_ROUTES.LOGIN} component={Login}

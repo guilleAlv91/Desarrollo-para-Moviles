@@ -2,7 +2,7 @@ import { useReducer } from "react"
 import AuthContext from "./auth-context"
 import { IUser } from "../../models"
 import { AUTH_ACTIONS } from "./enums"
-import { setUser, deleteItem, deleteUser } from "../../../utils/secure-store"
+import { deleteUser } from "../../../utils/secure-store"
 
 interface State {
     isLoading: boolean,
@@ -27,7 +27,6 @@ const AuthProvider = (props: any) => {
         const { payload } = action
         switch (action.type) {
             case AUTH_ACTIONS.LOGIN:
-                setUser(payload.user)
                 return {
                     ...prevState,
                     user: payload.user,
@@ -37,6 +36,16 @@ const AuthProvider = (props: any) => {
             case AUTH_ACTIONS.LOGOUT:
                 deleteUser()
                 return initialState
+            case AUTH_ACTIONS.SET_USER:
+                // setUser(payload.user)
+                // setTokens({ token: payload.token, refreshToken: payload.refreshToken });
+                return {
+                    ...prevState,
+                    isLoading: false,
+                    user: payload.user,
+                    token: payload.token,
+                    refreshToken: payload.refreshToken,
+                };
             default:
                 return prevState
         }

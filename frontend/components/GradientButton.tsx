@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, Pressable, View } from 'react-native';
+import { StyleSheet, Text, Pressable, View, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../utils';
 
@@ -7,19 +7,24 @@ interface GradientButtonProps {
     title: string;
     onPress: () => void;
     isEnabled: boolean;
+    isLoading?: boolean;
 }
-
-export const GradientButton: React.FC<GradientButtonProps> = ({ title, onPress, isEnabled }) => {
+export const GradientButton: React.FC<GradientButtonProps> = ({ title, onPress, isEnabled, isLoading }) => {
     return (
-        <Pressable onPress={onPress} disabled={!isEnabled} style={styles.buttonWrapper}>
-            {isEnabled ? (
+        <Pressable onPress={onPress} disabled={!isEnabled || isLoading} style={styles.buttonWrapper}>
+            {isEnabled || isLoading ? (
                 <LinearGradient
                     colors={[colors.primary, colors.secondary]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={styles.fullGradientButton}
                 >
-                    <Text style={styles.textEnabled}>{title}</Text>
+                    {
+                        isLoading
+                            ? (<ActivityIndicator color="white" />)
+                            : (<Text style={styles.textEnabled}>{title}</Text>)
+                    }
+
                 </LinearGradient>
             ) : (
                 <LinearGradient

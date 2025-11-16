@@ -11,6 +11,7 @@ import AuthProvider from './shared/context/AuthContext/auth-provider';
 //     duration: 1000,
 //     fade: true,
 // })
+
 export default function App() {
     return (
         <SafeAreaProvider>

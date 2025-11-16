@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Pressable, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import { colors, sizes } from "../../../utils";
 import { useContext, useState } from 'react';
 import { Entypo } from '@expo/vector-icons';
@@ -6,6 +6,9 @@ import { GradientButton } from '../../../components/GradientButton';
 import { AUTH_ACTIONS, AuthContext } from '../../../shared/context/AuthContext';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
+import { LoginPayload } from '../../../shared/interfaces';
+import axiosClient from '../../core/api';
+import { setUser, setTokens } from '../../../utils/secure-store';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Email no válido').required('El email es obligatorio'),
@@ -16,6 +19,80 @@ export default function Login({ navigation }: any) {
     const { state, dispatch } = useContext(AuthContext)
 
     const [showPass, setShowPass] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | undefined>(undefined);
+
+    // const handleLogin = (values: LoginPayload) => {
+    //     setIsLoading(true)
+    //     setError(undefined)
+    //     console.log('Ingresando con los valores:', values);
+
+    //     axiosClient.post('/auth/login', values)
+    //         .then(result => {
+    //             console.log('---RESULT', result)
+    //             const { access_token, refresh_token, user } = result.data;
+    //             dispatch({
+    //                 type: AUTH_ACTIONS.LOGIN,
+    //                 payload: {
+    //                     token: access_token,
+    //                     refreshToken: refresh_token,
+    //                     user: {
+    //                         user
+    //                         // id: "ID",
+    //                         // nombre: "Pancha",
+    //                         // apellido: "Pancha",
+    //                         // email: "Pancha@mail.com",
+    //                     }
+    //                 }
+    //             });
+    //         }).catch(err => {
+    //             console.log('---ERROR', err)
+    //             setError(err.data)
+    //             Alert.alert(
+    //                 'Error al iniciar sesión',
+    //                 'Revise los datos y vuelva a intentar',
+    //             );
+    //         }).finally(() => {
+    //             setIsLoading(false)
+    //             setError(undefined)
+    //         })
+    // }
+
+    const handleLogin = async (values: LoginPayload) => {
+        setIsLoading(true);
+        setError(undefined);
+        console.log('Ingresando con los valores:', values);
+
+        try {
+            const result = await axiosClient.post('/auth/login', values);
+            console.log('---RESULT', result);
+
+            const { access_token, refresh_token, user } = result.data;
+
+            await setTokens({ token: access_token, refreshToken: refresh_token });
+            await setUser(user);
+
+            dispatch({
+                type: AUTH_ACTIONS.LOGIN,
+                payload: {
+                    token: access_token,
+                    refreshToken: refresh_token,
+                    user: user
+                }
+            });
+
+        } catch (err: any) {
+            console.log('---ERROR', err);
+            const errorMsg = err.response?.data?.message || 'Revise los datos y vuelva a intentar';
+            setError(errorMsg);
+            Alert.alert(
+                'Error al iniciar sesión',
+                'Revise los datos y vuelva a intentar',
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     const formik = useFormik({
         initialValues: {
@@ -23,22 +100,7 @@ export default function Login({ navigation }: any) {
             password: '',
         },
         validationSchema: validationSchema,
-        onSubmit: values => {
-            console.log('Ingresando con los valores:', values);
-            dispatch({
-                type: AUTH_ACTIONS.LOGIN,
-                payload: {
-                    token: "TOKEN",
-                    refreshToken: "REFRESH_TOKEN",
-                    user: {
-                        id: "ID",
-                        nombre: "Pancha",
-                        apellido: "Pancha",
-                        email: "Pancha@mail.com",
-                    }
-                }
-            });
-        },
+        onSubmit: handleLogin,
     });
 
     const handleRegisterLink = () => {
@@ -48,6 +110,7 @@ export default function Login({ navigation }: any) {
     const isFormEnabled = formik.isValid && formik.dirty;
 
     return (
+        // Ver keyboard avoiding view antes de la clase del 23/10
         <View style={styles.container}>
             <Image
                 source={require("../../../assets/icons/logo.png")}
@@ -62,6 +125,7 @@ export default function Login({ navigation }: any) {
                     value={formik.values.email}
                     onChangeText={formik.handleChange('email')}
                     onBlur={formik.handleBlur('email')}
+                    editable={!isLoading}
                 />
                 {formik.touched.email && formik.errors.email && (
                     <Text style={styles.error}>{formik.errors.email}</Text>
@@ -75,6 +139,7 @@ export default function Login({ navigation }: any) {
                     value={formik.values.password}
                     onBlur={formik.handleBlur('password')}
                     onChangeText={formik.handleChange('password')}
+                    editable={!isLoading}
                 />
                 {formik.touched.password && formik.errors.password && (
                     <Text style={styles.error}>{formik.errors.password}</Text>
@@ -96,9 +161,16 @@ export default function Login({ navigation }: any) {
                 title="Iniciar Sesión"
                 onPress={formik.handleSubmit}
                 isEnabled={isFormEnabled}
+                isLoading={isLoading}
             />
+            {
+                error &&
+                <>
+                    <Text style={styles.error}>{error}</Text>
+                </>
+            }
 
-            <TouchableOpacity onPress={handleRegisterLink}>
+            <TouchableOpacity onPress={handleRegisterLink} disabled={isLoading}>
                 <Text style={styles.registerLink}>¿No tenés cuenta? Registrate</Text>
             </TouchableOpacity>
         </View>

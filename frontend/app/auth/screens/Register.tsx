@@ -1,29 +1,56 @@
-import React from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image, ScrollView } from 'react-native';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { colors, sizes } from '../../../utils';
 import { GradientButton } from '../../../components/GradientButton';
+import { RegisterFormValues, RegisterPayload } from '../../../shared/interfaces';
+import axiosClient from '../../core/api';
+import { Entypo } from '@expo/vector-icons';
 
 const validationSchema = Yup.object().shape({
-    name: Yup.string().required('El nombre es obligatorio'),
+    nombre: Yup.string().required('El nombre es obligatorio'),
+    apellido: Yup.string().required('El apellido es obligatorio'),
     email: Yup.string().email('Email no válido').required('El email es obligatorio'),
-    password: Yup.string().min(6, 'La contraseña debe tener al menos 6 caracteres').required('La contraseña es obligatoria'),
+    password: Yup.string().min(8, 'La contraseña debe tener al menos 6 caracteres').required('La contraseña es obligatoria'),
+    confirmPassword: Yup.string()
+        .oneOf([Yup.ref('password'), undefined], 'Las contraseñas no coinciden')
+        .required('Debes confirmar tu contraseña'),
 });
 
 export default function Register({ navigation }: any) {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [showPass, setShowPass] = useState<boolean>(true);
+    const [showConfirmPass, setShowConfirmPass] = useState<boolean>(true);
+
+    const handleRegister = (values: RegisterFormValues) => {
+        setIsLoading(true);
+        const { confirmPassword, ...dataToSend } = values;
+        axiosClient.post('/auth/register', dataToSend as RegisterPayload)
+            .then(result => {
+                Alert.alert(
+                    '¡Cuenta creada!',
+                    'Ahora podes iniciar sesión.',
+                    [{ text: 'OK', onPress: () => navigation.navigate('login') }]
+                );
+            }).catch(err => {
+                const message = err.response?.data?.message || 'Verifica los datos e intenta nuevamente';
+                Alert.alert('Error en el registro', Array.isArray(message) ? message[0] : message);
+            }).finally(() => {
+                setIsLoading(false);
+            });
+    }
+
     const formik = useFormik({
         initialValues: {
-            name: '',
+            nombre: '',
+            apellido: '',
             email: '',
             password: '',
+            confirmPassword: '',
         },
         validationSchema: validationSchema,
-        onSubmit: values => {
-            console.log('Registrando con los valores:', values);
-            Alert.alert('¡Ya creaste tu usuario!', 'Ahora podes iniciar sesión.');
-            navigation.navigate('login');
-        },
+        onSubmit: handleRegister
     });
 
     const isFormEnabled = formik.isValid && formik.dirty;
@@ -31,60 +58,116 @@ export default function Register({ navigation }: any) {
     const handleLoginLink = () => {
         navigation.navigate('login');
     };
+
     return (
-        <View style={styles.container}>
-            <Image
-                source={require("../../../assets/icons/logo.png")}
-                style={styles.logo}
-                resizeMode="contain"
-            />
-            <Text style={styles.title}>Crea tu cuenta</Text>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            <View style={styles.container}>
+                <Image
+                    source={require("../../../assets/icons/logo.png")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                />
+                <Text style={styles.title}>Crea tu cuenta</Text>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Nombre completo"
-                onChangeText={formik.handleChange('name')}
-                onBlur={formik.handleBlur('name')}
-                value={formik.values.name}
-            />
-            {formik.touched.name && formik.errors.name && (
-                <Text style={styles.errorText}>{formik.errors.name}</Text>
-            )}
+                <TextInput
+                    style={styles.input}
+                    placeholder="Nombre"
+                    onChangeText={formik.handleChange('nombre')}
+                    onBlur={formik.handleBlur('nombre')}
+                    value={formik.values.nombre}
+                    editable={!isLoading}
+                />
+                {formik.touched.nombre && formik.errors.nombre && (
+                    <Text style={styles.errorText}>{formik.errors.nombre}</Text>
+                )}
 
-            <TextInput
-                style={styles.input}
-                placeholder="Correo electrónico"
-                keyboardType="email-address"
-                onChangeText={formik.handleChange('email')}
-                onBlur={formik.handleBlur('email')}
-                value={formik.values.email}
-            />
-            {formik.touched.email && formik.errors.email && (
-                <Text style={styles.errorText}>{formik.errors.email}</Text>
-            )}
+                <TextInput
+                    style={styles.input}
+                    placeholder="Apellido"
+                    onChangeText={formik.handleChange('apellido')}
+                    onBlur={formik.handleBlur('apellido')}
+                    value={formik.values.apellido}
+                    editable={!isLoading}
+                />
+                {formik.touched.apellido && formik.errors.apellido && (
+                    <Text style={styles.errorText}>{formik.errors.apellido}</Text>
+                )}
 
-            <TextInput
-                style={styles.input}
-                placeholder="Contraseña"
-                secureTextEntry
-                onChangeText={formik.handleChange('password')}
-                onBlur={formik.handleBlur('password')}
-                value={formik.values.password}
-            />
-            {formik.touched.password && formik.errors.password && (
-                <Text style={styles.errorText}>{formik.errors.password}</Text>
-            )}
+                <TextInput
+                    style={styles.input}
+                    placeholder="Correo electrónico"
+                    keyboardType="email-address"
+                    onChangeText={formik.handleChange('email')}
+                    onBlur={formik.handleBlur('email')}
+                    value={formik.values.email}
+                    editable={!isLoading}
+                />
+                {formik.touched.email && formik.errors.email && (
+                    <Text style={styles.errorText}>{formik.errors.email}</Text>
+                )}
 
-            <GradientButton
-                title="Registrarse"
-                onPress={formik.handleSubmit}
-                isEnabled={isFormEnabled}
-            />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Contraseña"
+                    secureTextEntry={showPass}
+                    onChangeText={formik.handleChange('password')}
+                    onBlur={formik.handleBlur('password')}
+                    value={formik.values.password}
+                    editable={!isLoading}
+                />
+                {formik.touched.password && formik.errors.password && (
+                    <Text style={styles.errorText}>{formik.errors.password}</Text>
+                )}
+                {formik.values.password?.length > 0 && (
+                    <TouchableOpacity
+                        style={styles.iconWrapper}
+                        onPress={() => setShowPass(!showPass)}
 
-            <TouchableOpacity style={styles.loginLink} onPress={handleLoginLink}>
-                <Text style={styles.loginText}>¿Ya tenes una cuenta? Inicia sesión</Text>
-            </TouchableOpacity>
-        </View>
+                    >
+                        {showPass
+                            ? <Entypo name="eye" size={22} color="gray" />
+                            : <Entypo name="eye-with-line" size={22} color="gray" />}
+                    </TouchableOpacity>
+                )}
+                <TextInput
+                    style={styles.input}
+                    placeholder="Confirmar contraseña"
+                    secureTextEntry={showConfirmPass}
+                    onChangeText={formik.handleChange('confirmPassword')}
+                    onBlur={formik.handleBlur('confirmPassword')}
+                    value={formik.values.confirmPassword}
+                    editable={!isLoading}
+                />
+                {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                    <Text style={styles.errorText}>{formik.errors.confirmPassword}</Text>
+                )}
+                {formik.values.confirmPassword?.length > 0 && (
+                    <TouchableOpacity
+                        style={styles.iconWrapper}
+                        onPress={() => setShowConfirmPass(!showConfirmPass)}
+
+                    >
+                        {showConfirmPass
+                            ? <Entypo name="eye" size={22} color="gray" />
+                            : <Entypo name="eye-with-line" size={22} color="gray" />}
+                    </TouchableOpacity>
+                )}
+                <GradientButton
+                    title="Registrarse"
+                    onPress={formik.handleSubmit}
+                    isEnabled={isFormEnabled}
+                    isLoading={isLoading}
+                />
+
+                <TouchableOpacity
+                    style={styles.loginLink}
+                    onPress={handleLoginLink}
+                    disabled={isLoading}
+                >
+                    <Text style={styles.loginText}>¿Ya tenes una cuenta? Inicia sesión</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
     );
 }
 
@@ -94,31 +177,38 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         backgroundColor: colors.backgroundColor,
+        paddingBottom: 50
     },
     logo: {
         width: 250,
-        marginTop: 100,
+        marginTop: 40,
     },
     title: {
         fontSize: sizes.titulo,
         fontWeight: 'bold',
-        marginBottom: 30,
+        marginBottom: 20,
         color: 'black',
     },
     input: {
-        width: '100%',
+        width: '80%',
         height: 50,
         borderBottomWidth: 1,
         borderBottomColor: 'gray',
         paddingHorizontal: 8,
         fontSize: 16,
-        marginBottom: 10,
+        marginBottom: 5,
+    },
+    iconWrapper: {
+        position: 'absolute',
+        right: 8,
+        top: '50%',
+        transform: [{ translateY: -11 }],
     },
     errorText: {
         color: 'red',
-        fontSize: 12,
-        alignSelf: 'flex-start',
-        marginBottom: 10,
+        fontSize: 10,
+        textAlign: 'left',
+        width: '80%'
     },
     loginLink: {
         marginTop: 20,

@@ -6,7 +6,7 @@ import AuthContext from '../shared/context/AuthContext/auth-context'
 import TabsScreen from './tabs'
 import AuthStackScreen from './auth'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { getUser } from '../utils/secure-store'
+import { getTokens, getUser } from '../utils/secure-store'
 import { AUTH_ACTIONS } from '../shared/context/AuthContext'
 import * as SplashScreen from 'expo-splash-screen'
 
@@ -26,15 +26,43 @@ export default function Root() {
         console.log('st', state)
     }, [state]);
 
+    // useEffect(() => {
+    //     getUser().then(user => {
+    //         if (user) {
+    //             dispatch({ type: AUTH_ACTIONS.SET_USER, payload: { user } })
+    //             setIsSignedIn(true)
+    //             // SplashScreen.hideAsync()
+    //         }
+    //     })
+    // }, [])
+
     useEffect(() => {
-        getUser().then(user => {
-            if (user) {
-                dispatch({ type: AUTH_ACTIONS.SET_USER, payload: { user } })
-                setIsSignedIn(true)
-                // SplashScreen.hideAsync()
+        const bootstrapAsync = async () => {
+            try {
+                const [tokens, user] = await Promise.all([
+                    getTokens(),
+                    getUser()
+                ]);
+
+                if (tokens && user) {
+                    dispatch({
+                        type: AUTH_ACTIONS.SET_USER,
+                        payload: {
+                            user: user,
+                            token: tokens.token,
+                            refreshToken: tokens.refreshToken
+                        }
+                    });
+                } else {
+                    dispatch({ type: AUTH_ACTIONS.LOGOUT });
+                }
+            } catch (e) {
+                console.error("Error restaurando sesión:", e);
+                dispatch({ type: AUTH_ACTIONS.LOGOUT });
             }
-        })
-    }, [])
+        };
+        bootstrapAsync();
+    }, [dispatch]);
 
     return (
         <View style={{ flex: 1 }}>

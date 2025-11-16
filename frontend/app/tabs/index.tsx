@@ -6,8 +6,7 @@ import { useContext } from "react";
 import { AuthContext, AUTH_ACTIONS } from '../../shared/context/AuthContext';
 import { materialColors } from '../../utils/colors';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import Inicio from '../home/Inicio';
-import Perfil from '../perfil/Perfil';
+import { Inicio, Perfil } from './screens'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();

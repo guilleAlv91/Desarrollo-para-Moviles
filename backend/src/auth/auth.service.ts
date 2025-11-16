@@ -38,16 +38,40 @@ export class AuthService {
             throw new UnauthorizedException('Credenciales inválidas');
         }
 
-        const payload = {
+        // const payload = {
+        //     sub: user.id,
+        //     email: user.email,
+        //     role: user.role,
+        // };
+
+        // return {
+        //     message: 'Login exitoso',
+        //     access_token: this.jwtService.sign(payload),
+        //     user,
+        // };
+
+        const accessTokenPayload = {
             sub: user.id,
             email: user.email,
             role: user.role,
         };
 
+        const refreshTokenPayload = {
+            sub: user.id,
+        };
+
+        const accessToken = this.jwtService.sign(accessTokenPayload, {
+            expiresIn: '15m'
+        });
+
+        const refreshToken = this.jwtService.sign(refreshTokenPayload, {
+            expiresIn: '7d'
+        });
         return {
             message: 'Login exitoso',
-            access_token: this.jwtService.sign(payload),
-            user,
+            access_token: accessToken,
+            refresh_token: refreshToken,
+            user: user,
         };
     }
 
