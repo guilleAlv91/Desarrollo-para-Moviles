@@ -58,7 +58,8 @@
 									"pm.environment.set(\"access_token\", jsonData.access_token);"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
