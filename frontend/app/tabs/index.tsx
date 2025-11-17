@@ -1,35 +1,124 @@
-import { Pressable } from 'react-native';
+import React, { useContext } from "react";
+import styled from 'styled-components/native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { TAB_ROUTES } from '../../utils/constants';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useContext } from "react";
 import { AuthContext, AUTH_ACTIONS } from '../../shared/context/AuthContext';
-import { materialColors } from '../../utils/colors';
+import { colors, materialColors } from '../../utils/colors';
+import { Inicio, Perfil } from './screens';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import { Inicio, Perfil } from './screens'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 const Tab = createBottomTabNavigator();
 
+const MenuItemContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  padding-vertical: 10px;
+  padding-horizontal: 15px;
+`;
+
+const MenuText = styled.Text<{ isLogout?: boolean }>`
+  margin-left: 10px;
+  font-size: 16px;
+  color: ${(props) => props.isLogout ? materialColors.schemes.light.error : 'black'};
+`;
+
+const MenuHeader = styled.View`
+  align-items: center;
+  justify-content: center;
+`;
+
+const UserNameText = styled.Text`
+  font-size: 16px;
+  font-weight: bold;
+  color: ${materialColors.schemes.light.onSurface};
+`;
+
+const UserEmailText = styled.Text`
+  font-size: 12px;
+  color: gray;
+  margin-top: 2px;
+`;
+
+const MenuDivider = styled.View`
+  height: 1px;
+  background-color: #E0E0E0; /* Gris muy suave */
+  margin-horizontal: 10px;
+  margin-bottom: 5px;
+`;
+
+const popupCustomStyles = {
+    optionsContainer: {
+        backgroundColor: materialColors.schemes.light.surfaceContainer,
+        borderRadius: 8,
+        marginTop: 50,
+        width: 200,
+    },
+};
+
+const triggerStyles = {
+    paddingHorizontal: 15,
+};
+
 export default function TabsScreen() {
-    const { dispatch } = useContext(AuthContext)
+    const { dispatch, state } = useContext(AuthContext);
+    const { user } = state;
+
     const handleLogout = () => {
-        dispatch({ type: AUTH_ACTIONS.LOGOUT })
-    }
+        dispatch({ type: AUTH_ACTIONS.LOGOUT });
+    };
 
     return (
-        <Tab.Navigator screenOptions={{
-            headerTitleStyle: { color: materialColors.schemes.light.onPrimaryContainer },
-            headerStyle: { backgroundColor: materialColors.schemes.light.surfaceContainer },
-            tabBarStyle: { backgroundColor: materialColors.schemes.light.surfaceContainer },
-            tabBarActiveTintColor: materialColors.schemes.light.onPrimaryContainer,
-            headerRight: () => (
-                <Pressable onPress={handleLogout}>
-                    <MaterialIcons name="logout" size={24} color={materialColors.schemes.light.onPrimaryContainer} />
-                </Pressable>
-            )
-        }}>
-            {/* AGREGAR TODAS LAS SECCIONES */}
+        <Tab.Navigator
+            screenOptions={({ navigation }) => ({
+                headerTitleStyle: { color: colors.primary },
+                headerStyle: { backgroundColor: materialColors.schemes.light.surfaceContainer },
+                tabBarStyle: { backgroundColor: materialColors.schemes.light.surfaceContainer },
+                tabBarActiveTintColor: colors.primary,
+                headerRight: () => (
+                    <Menu>
+                        <MenuTrigger style={triggerStyles}>
+                            <MaterialCommunityIcons
+                                name="account-circle"
+                                size={40}
+                                color={colors.primary}
+                            // color={materialColors.schemes.light.onPrimaryContainer}
+                            />
+                        </MenuTrigger>
+
+                        <MenuOptions customStyles={popupCustomStyles}>
+                            <MenuOption disabled={true}>
+                                <MenuHeader>
+                                    <UserNameText>
+                                        {user?.nombre} {user?.apellido}
+                                    </UserNameText>
+                                    <UserEmailText>{user?.email}</UserEmailText>
+                                </MenuHeader>
+                            </MenuOption>
+                            <MenuDivider />
+                            <MenuOption onSelect={() => navigation.navigate(TAB_ROUTES.PERFIL)}>
+                                <MenuItemContainer>
+                                    <MaterialCommunityIcons name="account" size={20} color="black" />
+                                    <MenuText>Ver mi perfil</MenuText>
+                                </MenuItemContainer>
+                            </MenuOption>
+                            <MenuOption onSelect={handleLogout}>
+                                <MenuItemContainer>
+                                    <MaterialIcons
+                                        name="logout"
+                                        size={20}
+                                        color={materialColors.schemes.light.error}
+                                    />
+                                    <MenuText isLogout>Cerrar sesión</MenuText>
+                                </MenuItemContainer>
+                            </MenuOption>
+                        </MenuOptions>
+                    </Menu>
+                )
+            })}
+        >
             <Tab.Screen name={TAB_ROUTES.HOME} component={Inicio}
                 options={{
                     title: "Inicio",
@@ -47,5 +136,5 @@ export default function TabsScreen() {
                 }}
             />
         </Tab.Navigator>
-    )
+    );
 }
