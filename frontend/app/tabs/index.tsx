@@ -12,43 +12,6 @@ import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-m
 
 const Tab = createBottomTabNavigator();
 
-const MenuItemContainer = styled.View`
-  flex-direction: row;
-  align-items: center;
-  padding-vertical: 10px;
-  padding-horizontal: 15px;
-`;
-
-const MenuText = styled.Text<{ isLogout?: boolean }>`
-  margin-left: 10px;
-  font-size: 16px;
-  color: ${(props) => props.isLogout ? materialColors.schemes.light.error : 'black'};
-`;
-
-const MenuHeader = styled.View`
-  align-items: center;
-  justify-content: center;
-`;
-
-const UserNameText = styled.Text`
-  font-size: 16px;
-  font-weight: bold;
-  color: ${materialColors.schemes.light.onSurface};
-`;
-
-const UserEmailText = styled.Text`
-  font-size: 12px;
-  color: gray;
-  margin-top: 2px;
-`;
-
-const MenuDivider = styled.View`
-  height: 1px;
-  background-color: #E0E0E0; /* Gris muy suave */
-  margin-horizontal: 10px;
-  margin-bottom: 5px;
-`;
-
 const popupCustomStyles = {
     optionsContainer: {
         backgroundColor: materialColors.schemes.light.surfaceContainer,
@@ -84,7 +47,6 @@ export default function TabsScreen() {
                                 name="account-circle"
                                 size={40}
                                 color={colors.primary}
-                            // color={materialColors.schemes.light.onPrimaryContainer}
                             />
                         </MenuTrigger>
 
@@ -138,3 +100,40 @@ export default function TabsScreen() {
         </Tab.Navigator>
     );
 }
+
+const MenuItemContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  padding-vertical: 10px;
+  padding-horizontal: 15px;
+`;
+
+const MenuText = styled.Text<{ isLogout?: boolean }>`
+  margin-left: 10px;
+  font-size: 16px;
+  color: ${(props) => props.isLogout ? materialColors.schemes.light.error : 'black'};
+`;
+
+const MenuHeader = styled.View`
+  align-items: center;
+  justify-content: center;
+`;
+
+const UserNameText = styled.Text`
+  font-size: 16px;
+  font-weight: bold;
+  color: ${materialColors.schemes.light.onSurface};
+`;
+
+const UserEmailText = styled.Text`
+  font-size: 12px;
+  color: gray;
+  margin-top: 2px;
+`;
+
+const MenuDivider = styled.View`
+  height: 1px;
+  background-color: #E0E0E0; /* Gris muy suave */
+  margin-horizontal: 10px;
+  margin-bottom: 5px;
+`;
