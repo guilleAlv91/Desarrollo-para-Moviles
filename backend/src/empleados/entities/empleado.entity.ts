@@ -13,6 +13,7 @@ import { Role } from '../enums/role-enum';
 import { Licencia } from 'src/licencias/entities/licencia.entity';
 import { Recibo } from 'src/recibos/entities/recibo.entity';
 import { Exclude } from 'class-transformer';
+import { Asistencia } from '../../asistencias/entities/asistencia.entity';
 
 @Entity('empleados')
 export class Empleado {
@@ -53,6 +54,9 @@ export class Empleado {
 
     @OneToMany(() => Recibo, (recibo) => recibo.empleado)
     recibos: Recibo[];
+
+    @OneToMany(() => Asistencia, (asistencia) => asistencia.empleado)
+    asistencias: Asistencia[];
 
     @CreateDateColumn({ type: 'datetime' })
     createdAt: Date;

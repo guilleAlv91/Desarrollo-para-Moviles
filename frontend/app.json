@@ -1,53 +1,59 @@
 {
-  "expo": {
-    "name": "Laburo",
-    "slug": "Laburo",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true,
-      "icon": {
-        "dark": "./assets/icons/ios-dark.png",
-        "light": "./assets/icons/ios-light.png"
-      },
-      "bundleIdentifier": "com.abrilbasteiro.Laburo",
-      "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true,
-      "package": "com.abrilbasteiro.Laburo"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#ffffff",
-          "image": "./assets/icons/splash-icon-light.png",
-          "resizeMode": "contain",
-          "imageWidth": 200,
-          "dark": {
-            "image": "./assets/icons/splash-icon-dark.png",
-            "backgroundColor": "#000000"
-          }
+    "expo": {
+        "name": "Laburo",
+        "slug": "Laburo",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "userInterfaceStyle": "light",
+        "newArchEnabled": true,
+        "ios": {
+            "supportsTablet": true,
+            "icon": {
+                "dark": "./assets/icons/ios-dark.png",
+                "light": "./assets/icons/ios-light.png"
+            },
+            "bundleIdentifier": "com.abrilbasteiro.Laburo",
+            "infoPlist": {
+                "ITSAppUsesNonExemptEncryption": false
+            }
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/icons/adaptive-icon.png",
+                "backgroundColor": "#ffffff"
+            },
+            "edgeToEdgeEnabled": true,
+            "package": "com.abrilbasteiro.Laburo"
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "plugins": [
+            [
+                "expo-splash-screen",
+                {
+                    "backgroundColor": "#ffffff",
+                    "image": "./assets/icons/splash-icon-light.png",
+                    "resizeMode": "contain",
+                    "imageWidth": 200,
+                    "dark": {
+                        "image": "./assets/icons/splash-icon-dark.png",
+                        "backgroundColor": "#000000"
+                    }
+                }
+            ],
+            "expo-secure-store",
+            [
+                "expo-camera",
+                {
+                    "cameraPermission": "Permitir a Laburo usar tu camara"
+                }
+            ]
+        ],
+        "extra": {
+            "eas": {
+                "projectId": "5a5ac3ca-5f41-4e31-b0aa-90b22b59ec49"
+            }
         }
-      ],
-      "expo-secure-store"
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "5a5ac3ca-5f41-4e31-b0aa-90b22b59ec49"
-      }
     }
-  }
 }

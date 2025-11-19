@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { EmpleadosModule } from './empleados/empleados.module';
 import { LicenciasModule } from './licencias/licencias.module';
 import { RecibosModule } from './recibos/recibos.module';
+import { AsistenciasModule } from './asistencias/asistencias.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -20,6 +21,7 @@ import * as Joi from 'joi';
                 API_PORT: Joi.number().default(3000),
                 JWT_SECRET: Joi.string().required(),
                 JWT_EXPIRES_IN: Joi.string().default('3600s'),
+                QR_TEXT: Joi.string().required()
             }),
             envFilePath: '.env',
         }),
@@ -28,6 +30,7 @@ import * as Joi from 'joi';
         EmpleadosModule,
         LicenciasModule,
         RecibosModule,
+        AsistenciasModule,
     ],
     controllers: [],
     providers: [],
