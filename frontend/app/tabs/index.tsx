@@ -10,6 +10,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import Divider from "../../components/Divider";
+import Historial from "./screens/historial/Historial";
 
 const Tab = createBottomTabNavigator();
 
@@ -98,6 +99,14 @@ export default function TabsScreen() {
                     // tabBarIcon: ({ color, size }) => (
                     //     <MaterialCommunityIcons name="account" size={size} color={color} />
                     // )
+                }}
+            />
+            <Tab.Screen name={TAB_ROUTES.HISTORIAL} component={Historial}
+                options={{
+                    title: "Historial de Marcación",
+                    headerShown: true,
+                    tabBarButton: () => null,
+                    tabBarItemStyle: { width: 0, height: 0, flex: 0, overflow: 'hidden' },
                 }}
             />
         </Tab.Navigator>

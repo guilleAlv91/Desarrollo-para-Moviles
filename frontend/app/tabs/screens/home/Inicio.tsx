@@ -1,12 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { Text, ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AuthContext } from '../../../../shared/context/AuthContext';
-import { MODAL_ROUTES } from '../../../../utils/constants';
+import { MODAL_ROUTES, TAB_ROUTES } from '../../../../utils/constants';
 import axiosClient from '../../../core/api';
 import Divider from '../../../../components/Divider';
 import { getFormattedDate } from '../../../../utils/date';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface UltimoRegistro {
     ingreso: string | null;
@@ -24,27 +25,33 @@ export default function Inicio({ navigation }: any) {
         isLoading: true,
     });
 
-    useEffect(() => {
-        const fetchUltimoRegistro = async () => {
-            if (!user) return;
-            try {
-                const response = await axiosClient.get(`/asistencias/hoy`);
-                const { data } = response
-                const asistenciaActual = data.asistencia || {};
+    const fetchUltimoRegistro = useCallback(async () => {
+        if (!user || isLoading) return;
+        setUltimoRegistro(prev => ({ ...prev, isLoading: true }));
 
-                setUltimoRegistro({
-                    ingreso: asistenciaActual.horaIngreso || '-',
-                    egreso: asistenciaActual.horaEgreso || '-',
-                    isLoading: false,
-                });
-            } catch (error) {
-                console.error("Error al cargar último registro:", error);
-                setUltimoRegistro(prev => ({ ...prev, isLoading: false }));
-            }
-        };
+        try {
+            const response = await axiosClient.get(`/asistencias/hoy`);
+            const { data } = response;
+            const asistenciaActual = data.asistencia || {};
 
-        fetchUltimoRegistro();
-    }, [user, state.token]);
+            setUltimoRegistro({
+                ingreso: asistenciaActual.horaIngreso || null,
+                egreso: asistenciaActual.horaEgreso || null,
+                isLoading: false,
+            });
+        } catch (error) {
+            console.error("Error al cargar último registro:", error);
+            setUltimoRegistro(prev => ({ ...prev, isLoading: false }));
+        }
+    }, [user, state.token, isLoading]);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchUltimoRegistro();
+            return () => {
+            };
+        }, [fetchUltimoRegistro])
+    );
 
     const handleFichaje = () => {
         navigation.navigate(MODAL_ROUTES.QR_SCANNER);
@@ -97,8 +104,7 @@ export default function Inicio({ navigation }: any) {
                         <MaterialCommunityIcons name="qrcode-scan" size={30} color="black" />
                         <CardLabel>Marcar Ingreso/Salida</CardLabel>
                     </CardButton>
-
-                    <CardButton>
+                    <CardButton onPress={() => navigation.navigate(TAB_ROUTES.HISTORIAL)}>
                         <MaterialCommunityIcons name="history" size={30} color="black" />
                         <CardLabel>Historial de marcación</CardLabel>
                     </CardButton>

@@ -11,6 +11,7 @@ export const AUTH_ROUTES = {
 export const TAB_ROUTES = {
     HOME: 'home',
     PERFIL: 'perfil',
+    HISTORIAL: 'Historial',
 }
 
 export const MODAL_ROUTES = {
