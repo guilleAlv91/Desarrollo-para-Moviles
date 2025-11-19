@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { ChangeEmailDto } from './dto/changeEmail.dto';
 import { User } from 'src/empleados/decorators/user.decorator';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -29,6 +30,12 @@ export class AuthController {
     @Post('register')
     async register(@Body() registerDto: RegisterDto): Promise<Partial<Empleado>> {
         return this.authService.register(registerDto);
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Post('refresh')
+    async refreshTokens(@Body() refreshTokenDto: RefreshTokenDto) {
+        return this.authService.refreshTokens(refreshTokenDto.refreshToken);
     }
 
     @Post('change-password')

@@ -33,5 +33,6 @@ const getTokens = async (): Promise<SecureStoreToken | undefined> => {
     const tokens = await _getItem(STORAGE_KEYS.TOKENS);
     return tokens ? JSON.parse(tokens) : undefined;
 }
+const deleteTokens = () => _deleteItem(STORAGE_KEYS.TOKENS);
 
-export { setUser, getUser, deleteUser, deleteItem, setTokens, getTokens }
+export { setUser, getUser, deleteUser, deleteItem, setTokens, getTokens, deleteTokens }

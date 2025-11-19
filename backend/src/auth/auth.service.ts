@@ -38,50 +38,17 @@ export class AuthService {
             throw new UnauthorizedException('Credenciales inválidas');
         }
 
-        // const payload = {
-        //     sub: user.id,
-        //     email: user.email,
-        //     role: user.role,
-        // };
-
-        // return {
-        //     message: 'Login exitoso',
-        //     access_token: this.jwtService.sign(payload),
-        //     user,
-        // };
-
-        const accessTokenPayload = {
-            sub: user.id,
-            email: user.email,
-            role: user.role,
-        };
-
-        const refreshTokenPayload = {
-            sub: user.id,
-        };
-
-        const accessToken = this.jwtService.sign(accessTokenPayload, {
-            expiresIn: '15m'
-        });
-
-        const refreshToken = this.jwtService.sign(refreshTokenPayload, {
-            expiresIn: '7d'
-        });
+        const tokens = await this.getTokens(user.id!, user.email!, user.role!);
         return {
             message: 'Login exitoso',
-            access_token: accessToken,
-            refresh_token: refreshToken,
-            user: user,
+            user,
+            ...tokens,
         };
     }
 
     async register(registerDto: RegisterDto): Promise<Partial<Empleado>> {
-        const existingUser = await this.empleadosService.findByEmail(
-            registerDto.email,
-        );
-        if (existingUser) {
-            throw new ConflictException('El email ya está en uso');
-        }
+        const existingUser = await this.empleadosService.findByEmail(registerDto.email);
+        if (existingUser) throw new ConflictException('El email ya está en uso');
 
         const newUser = await this.empleadosService.create({
             ...registerDto,
@@ -109,7 +76,7 @@ export class AuthService {
         );
 
         if (!isPasswordMatching) {
-            throw new UnauthorizedException('La contraseña actual es incorrecta');
+            throw new UnauthorizedException('Constraseña incorrecta');
         }
 
         await this.empleadosService.update(userId, { password: newPassword });
@@ -122,40 +89,50 @@ export class AuthService {
         changeEmailDto: ChangeEmailDto,
     ): Promise<any> {
         const { newEmail, password } = changeEmailDto;
-
         const user = await this.empleadosService.findById(userId, true);
-        if (!user) {
-            throw new UnauthorizedException('Usuario no encontrado');
-        }
+        if (!user || !(await bcrypt.compare(password, user.password)))
+            throw new UnauthorizedException('Credenciales inválidas');
 
-        const isPasswordMatching = await bcrypt.compare(password, user.password);
-        if (!isPasswordMatching) {
-            throw new UnauthorizedException('La contraseña es incorrecta');
-        }
-
-        if (user.email === newEmail) {
-            throw new ConflictException('El nuevo email no puede ser igual al anterior');
-        }
-        const existingUser = await this.empleadosService.findByEmail(newEmail);
-        if (existingUser) {
-            throw new ConflictException('El nuevo email ya está en uso');
-        }
-
-        const updatedUser = await this.empleadosService.update(userId, {
-            email: newEmail,
-        });
-
-        const payload = {
-            sub: updatedUser.id,
-            email: updatedUser.email,
-            role: updatedUser.role,
-        };
+        const updated = await this.empleadosService.update(userId, { email: newEmail });
+        const tokens = await this.getTokens(updated.id, updated.email, updated.role);
 
         return {
-            message:
-                'Email actualizado exitosamente',
-            access_token: this.jwtService.sign(payload),
-            user: updatedUser,
+            message: 'Email actualizado',
+            user: updated,
+            ...tokens
+        };
+    }
+
+    async refreshTokens(refreshToken: string) {
+        try {
+            const payload = await this.jwtService.verifyAsync(refreshToken);
+
+            const user = await this.empleadosService.findById(payload.sub);
+            if (!user) throw new UnauthorizedException('Usuario no encontrado');
+
+            const tokens = await this.getTokens(user.id, user.email, user.role);
+
+            return {
+                ...tokens,
+                user,
+            };
+        } catch (e) {
+            throw new UnauthorizedException('Refresh token inválido o expirado');
+        }
+    }
+
+    private async getTokens(userId: string, email: string, role: Role) {
+        const accessTokenPayload = { sub: userId, email, role };
+        const refreshTokenPayload = { sub: userId };
+
+        const [accessToken, refreshToken] = await Promise.all([
+            this.jwtService.signAsync(accessTokenPayload, { expiresIn: '15m' }),
+            this.jwtService.signAsync(refreshTokenPayload, { expiresIn: '7d' }),
+        ]);
+
+        return {
+            access_token: accessToken,
+            refresh_token: refreshToken,
         };
     }
 }
