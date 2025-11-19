@@ -35,8 +35,8 @@ export default function Inicio({ navigation }: any) {
             const asistenciaActual = data.asistencia || {};
 
             setUltimoRegistro({
-                ingreso: asistenciaActual.horaIngreso || null,
-                egreso: asistenciaActual.horaEgreso || null,
+                ingreso: asistenciaActual.horaIngreso || '---',
+                egreso: asistenciaActual.horaEgreso || '---',
                 isLoading: false,
             });
         } catch (error) {
