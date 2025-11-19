@@ -1,16 +1,47 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AuthContext } from '../../../../shared/context/AuthContext';
-import { MODAL_ROUTES, TAB_ROUTES } from '../../../../utils/constants';
+import { MODAL_ROUTES } from '../../../../utils/constants';
+import axiosClient from '../../../core/api';
+import Divider from '../../../../components/Divider';
+import { getFormattedDate } from '../../../../utils/date';
+
+interface UltimoRegistro {
+    ingreso: string | null;
+    egreso: string | null;
+}
 
 export default function Inicio({ navigation }: any) {
     const { state } = useContext(AuthContext);
     const { user, isLoading } = state;
+    const hoy = getFormattedDate();
 
-    const handlePerfil = () => {
-        navigation.navigate(TAB_ROUTES.PERFIL);
-    };
+    const [ultimoRegistro, setUltimoRegistro] = useState<UltimoRegistro>({
+        ingreso: null,
+        egreso: null,
+    });
+
+    useEffect(() => {
+        const fetchUltimoRegistro = async () => {
+            if (!user) return;
+            try {
+                const response = await axiosClient.get(`/asistencias/hoy`);
+                const { data } = response
+                const asistenciaActual = data.asistencia || {};
+
+                setUltimoRegistro({
+                    ingreso: asistenciaActual.horaIngreso || '-',
+                    egreso: asistenciaActual.horaEgreso || '-',
+                });
+            } catch (error) {
+                console.error("Error al cargar último registro:", error);
+                setUltimoRegistro(prev => ({ ...prev, isLoading: false }));
+            }
+        };
+
+        fetchUltimoRegistro();
+    }, [user, state.token]);
 
     const handleFichaje = () => {
         navigation.navigate(MODAL_ROUTES.QR_SCANNER);
@@ -19,7 +50,7 @@ export default function Inicio({ navigation }: any) {
     if (isLoading) {
         return (
             <View style={styles.container}>
-                <Text>Cargando...</Text>
+                <Text><ActivityIndicator size="small" color="#27B5F4" /> Cargando...</Text>
             </View>
         );
     }
@@ -27,9 +58,31 @@ export default function Inicio({ navigation }: any) {
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.empresa}>Empresa S.A.</Text>
-                <Text>Hola, {user ? user.nombre : '!'}</Text>
+                <Text>Hola, {user?.nombre}!</Text>
             </View>
 
+            <View style={styles.registroCard}>
+                <Text style={styles.registroTitle}>Mi registro de hoy: {hoy}</Text>
+                <Divider />
+                {/* {ultimoRegistro.isLoading ? (
+                    <ActivityIndicator size="small" color="#27B5F4" />
+                ) : ( */}
+                <View style={styles.registroHorarios}>
+                    <View style={styles.horarioItem}>
+                        <Text style={styles.horarioLabel}>Ingreso</Text>
+                        <Text style={styles.horarioValue}>
+                            {ultimoRegistro.ingreso}
+                        </Text>
+                    </View>
+                    <View style={styles.horarioItem}>
+                        <Text style={styles.horarioLabel}>Salida</Text>
+                        <Text style={styles.horarioValue}>
+                            {ultimoRegistro.egreso}
+                        </Text>
+                    </View>
+                </View>
+                {/* )} */}
+            </View>
             <View style={styles.sections}>
                 <View style={styles.row}>
                     <TouchableOpacity style={styles.card} onPress={handleFichaje}>
@@ -41,42 +94,8 @@ export default function Inicio({ navigation }: any) {
                         <MaterialCommunityIcons name="history" size={30} color="black" />
                         <Text style={styles.label}>Historial de marcación</Text>
                     </TouchableOpacity>
-
-
-                    <TouchableOpacity style={styles.card} onPress={handlePerfil}>
-                        <MaterialCommunityIcons name="account-circle" size={30} color="black" />
-                        <Text style={styles.label}>Perfil</Text>
-                    </TouchableOpacity>
-
-                </View>
-
-                <View style={styles.row}>
-                    <TouchableOpacity style={styles.card}>
-                        <MaterialCommunityIcons name="cog-outline" size={30} color="black" />
-                        <Text style={styles.label}>Configuración</Text>
-                    </TouchableOpacity>
-
                 </View>
             </View>
-
-            {/* <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.bottomItem}>
-            <MaterialCommunityIcons name="home-outline" size={24} color="black" />
-            <Text style={styles.bottomLabel}>Inicio</Text>
-        </TouchableOpacity>
-
-
-       <TouchableOpacity style={styles.centerButton}>
-            <MaterialCommunityIcons name="qrcode-scan" size={30} color="black" />
-       </TouchableOpacity>
-
-
-        <TouchableOpacity style={styles.bottomItem}>
-            <MaterialCommunityIcons name="menu" size={24} color="black" />
-            <Text style={styles.bottomLabel}>Más</Text>
-        </TouchableOpacity>
-
-      </View> */}
         </View>
     );
 }
@@ -96,7 +115,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: 'black',
-        marginTop: 40
+        marginTop: 30,
+        marginBottom: 20
     },
     sections: {
         paddingHorizontal: 15
@@ -155,5 +175,39 @@ const styles = StyleSheet.create({
     centerIcon: {
         fontSize: 30,
         color: '#fff'
+    },
+    registroCard: {
+        backgroundColor: '#f9f9f9',
+        marginHorizontal: 15,
+        padding: 15,
+        borderRadius: 10,
+        // borderLeftWidth: 5,
+        // borderLeftColor: '#27B5F4',
+        marginBottom: 20,
+        elevation: 2,
+    },
+    registroTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    registroHorarios: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+    },
+    horarioItem: {
+        alignItems: 'center',
+    },
+    horarioLabel: {
+        fontSize: 12,
+        color: '#555',
+        marginBottom: 4,
+    },
+    horarioValue: {
+        fontSize: 20,
+        fontWeight: '900',
+        color: 'black',
     },
 });

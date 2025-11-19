@@ -9,6 +9,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import Divider from "../../components/Divider";
 
 const Tab = createBottomTabNavigator();
 
@@ -59,7 +60,7 @@ export default function TabsScreen() {
                                     <UserEmailText>{user?.email}</UserEmailText>
                                 </MenuHeader>
                             </MenuOption>
-                            <MenuDivider />
+                            <Divider />
                             <MenuOption onSelect={() => navigation.navigate(TAB_ROUTES.PERFIL)}>
                                 <MenuItemContainer>
                                     <MaterialCommunityIcons name="account" size={20} color="black" />
@@ -92,9 +93,11 @@ export default function TabsScreen() {
             <Tab.Screen name={TAB_ROUTES.PERFIL} component={Perfil}
                 options={{
                     title: "Perfil",
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons name="account" size={size} color={color} />
-                    )
+                    tabBarButton: () => null,
+                    tabBarItemStyle: { width: 0, height: 0, flex: 0, overflow: 'hidden' },
+                    // tabBarIcon: ({ color, size }) => (
+                    //     <MaterialCommunityIcons name="account" size={size} color={color} />
+                    // )
                 }}
             />
         </Tab.Navigator>
@@ -129,11 +132,4 @@ const UserEmailText = styled.Text`
   font-size: 12px;
   color: gray;
   margin-top: 2px;
-`;
-
-const MenuDivider = styled.View`
-  height: 1px;
-  background-color: #E0E0E0; /* Gris muy suave */
-  margin-horizontal: 10px;
-  margin-bottom: 5px;
 `;
