@@ -2,13 +2,18 @@ import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AuthContext } from '../../../../shared/context/AuthContext';
+import { MODAL_ROUTES, TAB_ROUTES } from '../../../../utils/constants';
 
 export default function Inicio({ navigation }: any) {
     const { state } = useContext(AuthContext);
     const { user, isLoading } = state;
 
     const handlePerfil = () => {
-        navigation.navigate('perfil');
+        navigation.navigate(TAB_ROUTES.PERFIL);
+    };
+
+    const handleFichaje = () => {
+        navigation.navigate(MODAL_ROUTES.QR_SCANNER);
     };
 
     if (isLoading) {
@@ -27,7 +32,7 @@ export default function Inicio({ navigation }: any) {
 
             <View style={styles.sections}>
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.card}>
+                    <TouchableOpacity style={styles.card} onPress={handleFichaje}>
                         <MaterialCommunityIcons name="qrcode-scan" size={30} color="black" />
                         <Text style={styles.label}>Marcar Ingreso/Salida</Text>
                     </TouchableOpacity>

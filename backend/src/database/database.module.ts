@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Empleado } from '../empleados/entities/empleado.entity';
 import { Licencia } from 'src/licencias/entities/licencia.entity';
 import { Recibo } from 'src/recibos/entities/recibo.entity';
+import { Asistencia } from '../asistencias/entities/asistencia.entity';
 
 @Module({
     imports: [
@@ -17,7 +18,7 @@ import { Recibo } from 'src/recibos/entities/recibo.entity';
                 username: configService.get<string>('DB_USER'),
                 password: configService.get<string>('DB_PASSWORD'),
                 database: configService.get<string>('DB_NAME'),
-                entities: [Empleado, Licencia, Recibo],
+                entities: [Empleado, Licencia, Recibo, Asistencia],
                 synchronize: true,
                 logging: false,
             }),

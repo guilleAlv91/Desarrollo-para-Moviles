@@ -1,6 +1,6 @@
 import { View } from 'react-native'
 import React, { useContext, useEffect } from 'react'
-import { ROOT_ROUTES } from '../utils/constants'
+import { MODAL_ROUTES, ROOT_ROUTES } from '../utils/constants'
 import { useState } from 'react'
 import AuthContext from '../shared/context/AuthContext/auth-context'
 import TabsScreen from './tabs'
@@ -9,6 +9,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { getTokens, getUser } from '../utils/secure-store'
 import { AUTH_ACTIONS } from '../shared/context/AuthContext'
 import * as SplashScreen from 'expo-splash-screen'
+import { QRScanner } from './tabs/screens'
 
 const Stack = createNativeStackNavigator()
 
@@ -73,6 +74,9 @@ export default function Root() {
                         :
                         <Stack.Screen name={ROOT_ROUTES.AUTH} component={AuthStackScreen} />
                 }
+                <Stack.Group screenOptions={{ presentation: "modal" }}>
+                    <Stack.Screen name={MODAL_ROUTES.QR_SCANNER} component={QRScanner} />
+                </Stack.Group>
             </Stack.Navigator>
         </View>
     )

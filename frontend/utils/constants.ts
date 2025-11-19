@@ -14,5 +14,8 @@ export const TAB_ROUTES = {
 }
 
 export const MODAL_ROUTES = {
-    CREATE_POST: 'create-post-modal'
+    CREATE_POST: 'create-post-modal',
+    QR_SCANNER: 'QRScanner' as const
+    // QR_SCANNER: 'fichar'
+
 }
