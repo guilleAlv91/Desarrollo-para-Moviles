@@ -29,6 +29,33 @@ export class AsistenciasService {
         return `${hh}:${mm}`;
     }
 
+    private validarUbicacion(latUser: number, longUser: number) {
+        const officeLat = parseFloat(this.configService.getOrThrow('OFFICE_LAT'));
+        const officeLong = parseFloat(this.configService.getOrThrow('OFFICE_LONG'));
+        const maxDistance = parseFloat(this.configService.getOrThrow('MAX_DISTANCE_METERS'));
+
+        const R = 6371e3;
+        const φ1 = (latUser * Math.PI) / 180;
+        const φ2 = (officeLat * Math.PI) / 180;
+        const Δφ = ((officeLat - latUser) * Math.PI) / 180;
+        const Δλ = ((officeLong - longUser) * Math.PI) / 180;
+
+        const a =
+            Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        const distanciaEnMetros = R * c;
+
+        console.log(`Distancia calculada: ${distanciaEnMetros.toFixed(2)} metros.`);
+
+        if (distanciaEnMetros > maxDistance) {
+            throw new BadRequestException(
+                `Estás fuera del rango permitido. \n\nPara poder fichar debes estar en la oficina.`,
+            );
+        }
+    }
+
     async registrarIngreso(
         empleado: Empleado,
         dto: RegistrarAsistenciaDto,
@@ -97,6 +124,8 @@ export class AsistenciasService {
             // if (dto.qrData !== 'LABURO_SEDE_PRINCIPAL_ENTRADA_UUID_842a') {
             throw new BadRequestException('Código QR invalido');
         }
+
+        this.validarUbicacion(dto.latitud, dto.longitud);
 
         const estadoActual = await this.getEstadoHoy(empleado.id);
 
