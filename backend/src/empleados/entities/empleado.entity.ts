@@ -49,6 +49,9 @@ export class Empleado {
     @Column({ type: 'date', nullable: true })
     fechaContratacion: Date;
 
+    @Column({ type: 'varchar', nullable: true })
+    fotoPerfil: string;
+
     @OneToMany(() => Licencia, (licencia) => licencia.empleado)
     licencias: Licencia[];
 
