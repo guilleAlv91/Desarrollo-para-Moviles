@@ -65,6 +65,16 @@ export class EmpleadosController {
         return this.empleadosService.update(user.id, updateEmpleadoDto);
     }
 
+    @Patch('me/foto')
+    async updateFotoPerfil(
+        @User() user: Empleado,
+        @Body('fotoUrl') fotoUrl: string,
+    ) {
+        return this.empleadosService.update(user.id, {
+            // @ts-ignore
+            fotoPerfil: fotoUrl
+        } as any);
+    }
     @Patch(':id')
     @UseGuards(RolesGuard)
     @Roles(Role.Admin)
