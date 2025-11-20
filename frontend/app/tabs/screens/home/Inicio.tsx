@@ -108,6 +108,10 @@ export default function Inicio({ navigation }: any) {
                         <MaterialCommunityIcons name="history" size={30} color="black" />
                         <CardLabel>Historial de marcación</CardLabel>
                     </CardButton>
+                    <CardButton onPress={() => navigation.navigate(TAB_ROUTES.RECIBOS)}>
+                        <MaterialCommunityIcons name="file-document-outline" size={30} color="black" />
+                        <CardLabel>Mis recibos</CardLabel>
+                    </CardButton>
                 </RowView>
             </SectionsView>
         </Container>
