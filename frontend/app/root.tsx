@@ -10,6 +10,7 @@ import { getTokens, getUser } from '../utils/secure-store'
 import { AUTH_ACTIONS } from '../shared/context/AuthContext'
 import * as SplashScreen from 'expo-splash-screen'
 import { QRScanner } from './tabs/screens'
+import MapScreen from "./tabs/screens/map/MapScreen";
 
 const Stack = createNativeStackNavigator()
 
@@ -76,7 +77,9 @@ export default function Root() {
                 }
                 <Stack.Group screenOptions={{ presentation: "modal" }}>
                     <Stack.Screen name={MODAL_ROUTES.QR_SCANNER} component={QRScanner} />
+                    <Stack.Screen name={MODAL_ROUTES.MAP} component={MapScreen} />
                 </Stack.Group>
+
             </Stack.Navigator>
         </View>
     )

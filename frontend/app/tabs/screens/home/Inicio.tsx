@@ -48,8 +48,7 @@ export default function Inicio({ navigation }: any) {
     useFocusEffect(
         useCallback(() => {
             fetchUltimoRegistro();
-            return () => {
-            };
+            return () => {};
         }, [fetchUltimoRegistro])
     );
 
@@ -104,13 +103,22 @@ export default function Inicio({ navigation }: any) {
                         <MaterialCommunityIcons name="qrcode-scan" size={30} color="black" />
                         <CardLabel>Marcar Ingreso/Salida</CardLabel>
                     </CardButton>
+
                     <CardButton onPress={() => navigation.navigate(TAB_ROUTES.HISTORIAL)}>
                         <MaterialCommunityIcons name="history" size={30} color="black" />
                         <CardLabel>Historial de marcación</CardLabel>
                     </CardButton>
+
                     <CardButton onPress={() => navigation.navigate(TAB_ROUTES.RECIBOS)}>
                         <MaterialCommunityIcons name="file-document-outline" size={30} color="black" />
                         <CardLabel>Mis recibos</CardLabel>
+                    </CardButton>
+                </RowView>
+
+                <RowView>
+                    <CardButton onPress={() => navigation.navigate(MODAL_ROUTES.MAP)}>
+                        <MaterialCommunityIcons name="map-marker-radius" size={30} color="black" />
+                        <CardLabel>Ver mapa</CardLabel>
                     </CardButton>
                 </RowView>
             </SectionsView>
