@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Camera, BarcodeScanningResult, CameraView } from 'expo-camera';
-import * as Location from 'expo-location'; // <--- IMPORTAR ESTO
+import * as Location from 'expo-location';
+import * as LocalAuthentication from 'expo-local-authentication';
 import { StackScreenProps } from '@react-navigation/stack';
 import axiosClient from '../../../core/api';
 import { colors } from '../../../../utils';
@@ -10,40 +11,79 @@ import { useCustomAlert } from '../../../../hooks/useCustomAlert';
 
 type FichajeScannerProps = StackScreenProps<any, 'QRScanner'>;
 
-// EL QR A ESCANEAR DEBE DECIR LABURO_SEDE_PRINCIPAL_ENTRADA_UUID_842a
-
 export default function QRScanner({ navigation }: FichajeScannerProps) {
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const [scanned, setScanned] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [location, setLocation] = useState<Location.LocationObject | null>(null);
+    const [biometricReady, setBiometricReady] = useState(false);
     const [locationError, setLocationError] = useState<string | null>(null);
+
     const { alertData, showAlert, hideAlert } = useCustomAlert();
 
     useEffect(() => {
         (async () => {
             const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
-
             const { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
-
-            setHasPermission(cameraStatus === 'granted' && locationStatus === 'granted');
 
             if (locationStatus !== 'granted') {
                 setLocationError('Permiso de ubicación denegado');
-                Alert.alert("Permiso requerido", "Necesitamos tu ubicación para verificar que estás en la oficina.");
+            }
+
+            const permissionsGranted =
+                cameraStatus === 'granted' && locationStatus === 'granted';
+
+            setHasPermission(permissionsGranted);
+
+            if (permissionsGranted) {
+                await authenticateBiometric();
             }
         })();
     }, []);
 
+       const authenticateBiometric = async () => {
+        const compatible = await LocalAuthentication.hasHardwareAsync();
+
+        if (!compatible) {
+            Alert.alert("Error", "El dispositivo no soporta autenticación biométrica.");
+            return;
+        }
+
+        const enrolled = await LocalAuthentication.isEnrolledAsync();
+        if (!enrolled) {
+            Alert.alert("Error", "No hay biometría registrada en este dispositivo.");
+            return;
+        }
+
+        const result = await LocalAuthentication.authenticateAsync({
+            promptMessage: "Confirma tu identidad",
+            fallbackLabel: "Usar código",
+        });
+
+        if (result.success) {
+            setBiometricReady(true);
+        } else {
+            Alert.alert(
+                "Autenticación requerida",
+                "No se pudo verificar tu identidad.",
+                [
+                    { text: "Reintentar", onPress: authenticateBiometric },
+                    {
+                        text: "Cancelar",
+                        onPress: () => navigation.goBack(),
+                        style: "destructive",
+                    },
+                ]
+            );
+        }
+    };
+
+    
     const registrarMovimiento = async (qrData: string) => {
         setLoading(true);
         try {
             const currentLocation = await Location.getCurrentPositionAsync({
                 accuracy: Location.Accuracy.High
             });
-
-            console.log(`QR: ${qrData}`);
-            console.log(`Ubicación: ${currentLocation.coords.latitude}, ${currentLocation.coords.longitude}`);
 
             const response = await axiosClient.post('/asistencias/fichar', {
                 qrData: qrData,
@@ -58,15 +98,7 @@ export default function QRScanner({ navigation }: FichajeScannerProps) {
                 `¡${tipoFichaje} registrado con éxito!`,
                 () => navigation.goBack()
             );
-            // Alert.alert(
-            //     "Fichaje Exitoso",
-            //     `¡${tipoFichaje} registrado con éxito! \n\nHora: ${new Date().toLocaleTimeString('es-ES', {
-            //         hour: '2-digit',
-            //         minute: '2-digit',
-            //         hour12: false,
-            //     })}`,
-            //     [{ text: "OK", onPress: () => navigation.goBack() }]
-            // );
+
         } catch (error: any) {
             const backendError = error.response?.data?.error;
             const backendMessage = error.response?.data?.message;
@@ -74,11 +106,6 @@ export default function QRScanner({ navigation }: FichajeScannerProps) {
             const mensaje = backendError || backendMessage || "Error al conectar con el servidor.";
 
             showAlert("Error de Fichaje", mensaje, () => setScanned(false));
-
-
-            // Alert.alert("Error de Fichaje", mensaje, [
-            //     { text: "OK", onPress: () => setScanned(false) }
-            // ]);
         } finally {
             setLoading(false);
         }
@@ -90,14 +117,21 @@ export default function QRScanner({ navigation }: FichajeScannerProps) {
         registrarMovimiento(data);
     };
 
-    if (hasPermission === null) {
-        return <View style={styles.center}><ActivityIndicator size="large" color={colors.primary} /></View>;
+ 
+    if (hasPermission === null || !biometricReady) {
+        return (
+            <View style={styles.center}>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text style={{ marginTop: 10 }}>Preparando escáner...</Text>
+            </View>
+        );
     }
+
     if (hasPermission === false) {
         return (
             <View style={styles.center}>
                 <Text style={{ textAlign: 'center', padding: 20 }}>
-                    Se requiere acceso a la cámara y a la ubicación para fichar.
+                    Se requiere acceso a cámara y ubicación.
                     {locationError && `\n\nError: ${locationError}`}
                 </Text>
             </View>
@@ -118,13 +152,17 @@ export default function QRScanner({ navigation }: FichajeScannerProps) {
             <CameraView
                 style={StyleSheet.absoluteFillObject}
                 onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-                barcodeScannerSettings={{
-                    barcodeTypes: ["qr"],
-                }}
+                barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
             />
+
             <View style={styles.overlay}>
-                {!scanned && <Text style={styles.scanText}>Escanea el QR de la oficina</Text>}
+                {!scanned && (
+                    <Text style={styles.scanText}>
+                        Escanea el QR de la oficina
+                    </Text>
+                )}
             </View>
+
             <CustomAlert
                 visible={alertData.visible}
                 title={alertData.title}
@@ -137,10 +175,7 @@ export default function QRScanner({ navigation }: FichajeScannerProps) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#000',
-    },
+    container: { flex: 1, backgroundColor: '#000' },
     center: {
         flex: 1,
         justifyContent: 'center',
