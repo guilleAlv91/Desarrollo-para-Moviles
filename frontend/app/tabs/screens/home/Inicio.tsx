@@ -48,8 +48,7 @@ export default function Inicio({ navigation }: any) {
     useFocusEffect(
         useCallback(() => {
             fetchUltimoRegistro();
-            return () => {
-            };
+            return () => {};
         }, [fetchUltimoRegistro])
     );
 
@@ -111,6 +110,13 @@ export default function Inicio({ navigation }: any) {
                     <CardButton onPress={() => navigation.navigate(TAB_ROUTES.RECIBOS)}>
                         <MaterialCommunityIcons name="file-document-outline" size={30} color="black" />
                         <CardLabel>Mis recibos</CardLabel>
+                    </CardButton>
+                </RowView>
+
+                <RowView>
+                    <CardButton onPress={() => navigation.navigate(MODAL_ROUTES.MAP)}>
+                        <MaterialCommunityIcons name="map-marker-radius" size={30} color="black" />
+                        <CardLabel>Ver mapa</CardLabel>
                     </CardButton>
                 </RowView>
             </SectionsView>

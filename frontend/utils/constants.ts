@@ -16,7 +16,9 @@ export const TAB_ROUTES = {
 }
 
 export const MODAL_ROUTES = {
-    QR_SCANNER: 'QRScanner' as const
+    QR_SCANNER: 'QRScanner' as const,
     // QR_SCANNER: 'fichar'
+    MAP: 'MapScreen' as const
+
 
 }
